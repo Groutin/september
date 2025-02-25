@@ -1,0 +1,351 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+
+	<head>
+		<title> C LA TEUF </title>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="GROSSE BOUM POUR LANNIV DALEXIA">
+		<meta name="keywords" content="Anniversaire Alexia">
+		<meta name="author" content="Paul DINH GIA">
+		<!-- Favicon -->
+		<link rel="icon" type="image/ico" href="Ressources/favicon.png"/>
+		<!-- Stylesheet -->
+		<link rel="stylesheet" type="text/css" href="CSS/style.css" title="Theme1"/>
+		<!--Javascript tout en bas-->
+	</head>
+
+	<body>
+		<!-- Speaker icon -->
+		<a class="playbutton" onclick = "mute()">
+			<img id="play_button" src="Ressources/speakermute.svg">
+		</a>
+
+		<div class="logo">
+			Paul D g
+		</div>
+		<div class="hb">
+			OEEEEEEEEEEEEEEEEEE<br>
+				C'EST LA TEUF
+		</div>
+
+		<div class="imgdiv">
+			<div class="img_container">
+				<img class="image1-a" id="myImage" src="Ressources/test3.png" > 
+	  			<!-- <a class="btn btn-1" onclick = "changeImage()">Grand mere edition</a> -->
+	  			<img class="image1-a caca" src="Ressources/caca.png" onclick = "changeImage();wow()"  > 
+  			</div>
+		</div>
+
+		<!-- Audio player -->
+		<audio id="background_audio">
+  			<source src="Ressources/bgm.mp3">
+  			Your browser does not support the audio tag.
+		</audio>
+		<audio id="background_audio2">
+  			<source src="">
+  			Your browser does not support the audio tag.
+		</audio>
+		<audio id="wow">
+  			<source src="Ressources/prout.mp3">
+  			Your browser does not support the audio tag.
+		</audio>
+
+
+   		<div class="hb text1">
+   			TU ME DOIS<br> 20<br> BALLES
+   		</div>
+
+
+   		<canvas id="noise" class="noise"></canvas>
+		<canvas id="canvas"></canvas>
+
+		<!-- Loading square for squar.red network -->
+		<div class="loaderdiv">
+			<span class="loader"><span class="loader-inner"></span></span>
+		</div>
+   		<div class="stars"></div>
+
+
+<div class="twinkling"></div>
+<div class="clouds"></div>
+
+
+		<!-- Javascript -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="Javascript/vanilla-tilt.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.8.4/pixi.min.js"></script>
+		<script src="Javascript/script.js"></script>
+		<script src="Javascript/flame.js"></script>
+
+		<script>
+function changeImage() {
+    var image = document.getElementById('myImage');
+    if (image.src.match("test4")) {
+        image.src = "Ressources/test3.png";
+    } else {
+        image.src = "Ressources/test4.png";
+    }
+}
+
+		// LOADER
+        $(window).on("load",function(){
+          $(".loaderdiv").fadeOut("slow");
+        });
+
+
+
+$(function() {
+	var canvas = $('#canvas')[0];
+	canvas.width = $(window).width();
+	canvas.height = $(window).height();
+	var ctx = canvas.getContext('2d');
+	
+	// resize
+	$(window).on('resize', function() {
+		canvas.width = $(window).width();
+		canvas.height = $(window).height();
+		ctx.fillStyle = '#000';
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+	});
+
+	// init
+	ctx.fillStyle = '#000';
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	// objects
+	var listFire = [];
+	var listFirework = [];
+	var fireNumber = 10;
+	var center = { x: canvas.width / 2, y: canvas.height / 2 };
+	var range = 375;
+	for (var i = 0; i < fireNumber; i++) {
+		var fire = {
+			x: Math.random() * range / 2 - range / 4 + center.x,
+			y: Math.random() * range * 2 + canvas.height,
+			size: Math.random() + 0.5,
+			fill: '#fd1',
+			vx: Math.random() - 0.5,
+			vy: -(Math.random() + 4),
+			ax: Math.random() * 0.02 - 0.01,
+			far: Math.random() * range + (center.y - range)
+		};
+		fire.base = {
+			x: fire.x,
+			y: fire.y,
+			vx: fire.vx
+		};
+		//
+		listFire.push(fire);
+	}
+
+	function randColor() {
+		var r = Math.floor(Math.random() * 256);
+		var g = Math.floor(Math.random() * 256);
+		var b = Math.floor(Math.random() * 256);
+		var color = 'rgb($r, $g, $b)';
+		color = color.replace('$r', r);
+		color = color.replace('$g', g);
+		color = color.replace('$b', b);
+		return color;
+	}
+
+	(function loop() {
+		requestAnimationFrame(loop);
+		update();
+		draw();
+	})();
+
+	function update() {
+		for (var i = 0; i < listFire.length; i++) {
+			var fire = listFire[i];
+			//
+			if (fire.y <= fire.far) {
+				// case add firework
+				var color = randColor();
+				for (var i = 0; i < fireNumber * 5; i++) {
+					var firework = {
+						x: fire.x,
+						y: fire.y,
+						size: Math.random() + 1.5,
+						fill: color,
+						vx: Math.random() * 5 - 2.5,
+						vy: Math.random() * -5 + 1.5,
+						ay: 0.05,
+						alpha: 1,
+						life: Math.round(Math.random() * range / 2) + range / 2
+					};
+					firework.base = {
+						life: firework.life,
+						size: firework.size
+					};
+					listFirework.push(firework);
+				}
+				// reset
+				fire.y = fire.base.y;
+				fire.x = fire.base.x;
+				fire.vx = fire.base.vx;
+				fire.ax = Math.random() * 0.02 - 0.01;
+			}
+			//
+			fire.x += fire.vx;
+			fire.y += fire.vy;
+			fire.vx += fire.ax;
+		}
+
+		for (var i = listFirework.length - 1; i >= 0; i--) {
+			var firework = listFirework[i];
+			if (firework) {
+				firework.x += firework.vx;
+				firework.y += firework.vy;
+				firework.vy += firework.ay;
+				firework.alpha = firework.life / firework.base.life;
+				firework.size = firework.alpha * firework.base.size;
+				firework.alpha = firework.alpha > 0.6 ? 1 : firework.alpha;
+				//
+				firework.life--;
+				if (firework.life <= 0) {
+					listFirework.splice(i, 1);
+				}
+			}
+		}
+	}
+
+	function draw() {
+
+// Draw whatever else over top of it on the canvas.
+		// clear
+ 		// var grad = ctx.createRadialGradient(0.5*canvas.width, 0.7*canvas.height, 0, 0.5*canvas.width, 0.7*canvas.height, 600);
+  
+  	// 	grad.addColorStop(0, 'rgba(114, 69, 140, 1)');
+  	// 	grad.addColorStop(0.82, 'rgba(28, 7, 33, 1)');
+  	// 	grad.addColorStop(1, 'rgba(0, 0, 0, 1)');
+  var grad = ctx.createLinearGradient(0.5*canvas.width, canvas.height, 0.5*canvas.width, 200);
+ grad.addColorStop(0, 'rgba(238, 130, 238, 1)');
+  grad.addColorStop(1, 'rgba(128, 32, 0, 1)');
+
+
+
+		ctx.globalCompositeOperation = 'source-over';
+		ctx.globalAlpha = 0.18;
+		ctx.fillStyle = grad;
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+		// re-draw
+		ctx.globalCompositeOperation = 'screen';
+		ctx.globalAlpha = 1;
+		for (var i = 0; i < listFire.length; i++) {
+			var fire = listFire[i];
+			ctx.beginPath();
+			ctx.arc(fire.x, fire.y, fire.size, 0, Math.PI * 2);
+			ctx.closePath();
+			ctx.fillStyle = fire.fill;
+			ctx.fill();
+		}
+
+		for (var i = 0; i < listFirework.length; i++) {
+			var firework = listFirework[i];
+			ctx.globalAlpha = firework.alpha;
+			ctx.beginPath();
+			ctx.arc(firework.x, firework.y, firework.size, 0, Math.PI * 2);
+			ctx.closePath();
+			ctx.fillStyle = firework.fill;
+			ctx.fill();
+		}
+	}
+})		
+
+//NOISE
+
+const noise = () => {
+    let canvas, ctx;
+
+    let wWidth, wHeight;
+
+    let noiseData = [];
+    let frame = 0;
+
+    let loopTimeout;
+
+
+    // Create Noise
+    const createNoise = () => {
+        const idata = ctx.createImageData(wWidth, wHeight);
+        const buffer32 = new Uint32Array(idata.data.buffer);
+        const len = buffer32.length;
+
+        for (let i = 0; i < len; i++) {
+            if (Math.random() < 0.5) {
+                buffer32[i] = 0xff000000;
+            }
+        }
+
+        noiseData.push(idata);
+    };
+
+
+    // Play Noise
+    const paintNoise = () => {
+        if (frame === 9) {
+            frame = 0;
+        } else {
+            frame++;
+        }
+
+        ctx.putImageData(noiseData[frame], 0, 0);
+    };
+
+
+    // Loop
+    const loop = () => {
+        paintNoise(frame);
+
+        loopTimeout = window.setTimeout(() => {
+            window.requestAnimationFrame(loop);
+        }, (1000 / 25));
+    };
+
+
+    // Setup
+    const setup = () => {
+        wWidth = window.innerWidth;
+        wHeight = window.innerHeight;
+
+        canvas.width = wWidth;
+        canvas.height = wHeight;
+
+        for (let i = 0; i < 10; i++) {
+            createNoise();
+        }
+
+        loop();
+    };
+
+
+    // Reset
+    let resizeThrottle;
+    const reset = () => {
+        window.addEventListener('resize', () => {
+            window.clearTimeout(resizeThrottle);
+
+            resizeThrottle = window.setTimeout(() => {
+                window.clearTimeout(loopTimeout);
+                setup();
+            }, 200);
+        }, false);
+    };
+
+
+    // Init
+    const init = (() => {
+        canvas = document.getElementById('noise');
+        ctx = canvas.getContext('2d');
+
+        setup();
+    })();
+};
+
+noise();
+		</script>
+
+
+</html>
